@@ -7,7 +7,10 @@ def connscan(tgt_host, tgt_port):
     try:
         connsckt = socket(AF_INET, SOCK_STREAM)
         connsckt.connect((tgt_host, tgt_port))
+        connsckt.send('ViolentPython\r\n')
+        results = connsckt.recv(100)
         print('[+]%d/tcp open' % tgt_port)
+        print('[+] ' + str(results))
         connsckt.close()
     except:
         print('[-]%d/tcp closed' % tgt_port)
@@ -30,15 +33,22 @@ def portscan(tgt_host, tgt_ports):
         print('Scanning port ' + tgt_port)
         connscan(tgt_host, int(tgt_port))
 
-parser = optparse.OptionParser(
-    'usage %prog -H' + '<target host> -p <target port>')
-parser.add_option('-H', dest='tgt_host', type='string',
-                  help='specify target host')
-parser.add_option('-p', dest='tgt_port', type='int',
-                  help='specify target port')
-(options, args) = parser.parse_args()
-tgt_host = options.tgt_host
-tgt_port = options.tgt_port
-if (tgt_host is None) or (tgt_port is None):
-    print(parser.usage)
-    exit(0)
+
+def main():
+    """Set up an run above functions."""
+    parser = optparse.OptionParser(
+        'usage %prog -H' + '<target host> -p <target port>')
+    parser.add_option('-H', dest='tgt_host', type='string',
+                      help='specify target host')
+    parser.add_option('-p', dest='tgt_port', type='int',
+                      help='specify target port')
+    (options, args) = parser.parse_args()
+    tgt_host = options.tgt_host
+    tgt_port = options.tgt_port.split(', ')
+    if (tgt_host is None) or (tgt_port is None):
+        print(parser.usage)
+        exit(0)
+        portscan(tgt_host, tgt_ports)
+
+if __name__ == '__main__':
+    main()
