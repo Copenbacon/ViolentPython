@@ -1,7 +1,9 @@
 """A port scanning script from the Violent Python cookbook."""
+import nmap
 import optparse
 from socket import *
 from threading import *
+
 
 screen_lock = Semaphore(value=1)
 
@@ -42,6 +44,14 @@ def portscan(tgt_host, tgt_ports):
         t.start()
 
 
+def nmap_scan(tgt_host, tgt_port):
+    """Basic NMAP scan."""
+    nm_scan = nmap.PortScanner()
+    nm_scan.scan(tgt_host, tgt_port)
+    state = nm_scan[tgt_host]['tcp'][int(tgt_port)]['state']
+    print("[*]" + tgt_host + 'tcp/' + tgt_port + ' ' + state)
+
+
 def main():
     """Parse -p and -H flags and scan the ip and port associated with it."""
     parser = optparse.OptionParser(
@@ -56,7 +66,8 @@ def main():
     if (tgt_host is None) or (tgt_ports[0] is None):
         print(parser.usage)
         exit(0)
-    portscan(tgt_host, tgt_ports)
+    for tgt_port in tgt_ports:
+        nmap_scan(tgt_host, str(tgt_port))
 
 if __name__ == '__main__':
     main()
