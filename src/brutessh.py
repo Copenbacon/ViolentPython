@@ -28,3 +28,14 @@ def connect(user, host, password):
     child.sendline(password)
     child.expect(PROMPT)
     return child
+
+def main():
+    """Run the function."""
+    host = 'localhost'
+    user = 'root'
+    password = 'toor'
+    child = connect(user, host, password)
+    send_command(child, 'cat /etc/shadow | grep root')
+
+if __name__ == '__main__':
+    main()
